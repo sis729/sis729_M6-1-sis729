@@ -1,0 +1,35 @@
+name: M6Task2
+
+on:
+  workflow_dispatch:
+    inputs:
+      custom-text:
+        description: 'Enter the text to output'
+        required: true
+        default: 'Hello from input!'
+
+
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    environment: prod  
+    outputs:
+      my-output: ${{ steps.set-output.outputs.text }}
+    steps:
+      - name: Set user input as output
+        id: set-output
+        run: echo "text=${{ github.event.inputs.custom-text }}" >> $GITHUB_OUTPUT
+
+      - name: Echo environment secret and variable
+        run: |
+          echo "Secret: ${{ secrets.MY_SECRET }}"
+          echo "Variable: ${{ vars.MY_VARIABLE }}"
+          
+
+  job2:
+    needs: job1
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - name: Echo output from job1
+        run: echo "${{ needs.job1.outputs.my-output }}"
