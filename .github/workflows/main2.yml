@@ -1,0 +1,26 @@
+name: Task 2
+
+on:
+  workflow_dispatch:
+    inputs:
+      user_message:
+        description: 'Enter a message'
+        required: true
+        default: 'Hello World'
+
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    outputs:
+      message: ${{ steps.set-output.outputs.message }}
+    steps:
+      - name: Set output from user input
+        id: set-output
+        run: echo "message=${{ github.event.inputs.user_message }}" >> $GITHUB_OUTPUT
+
+  job2:
+    needs: job1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print user input from job1
+        run: echo "${{ needs.job1.outputs.message }}"
